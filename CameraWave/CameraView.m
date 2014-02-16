@@ -1,8 +1,8 @@
 #import "CameraView.h"
 
-#define BUFFER_OFFSET(i) ((char *)NULL + (i))
-
 enum {
+	UNIFORM_AMPLITUDE,
+	UNIFORM_PERIOD,
 	UNIFORM_TEXTURE,
 	NUM_UNIFORMS
 };
@@ -14,18 +14,24 @@ enum {
 	NUM_ATTRIBUTES
 };
 
-float vertexs[] = {
+static float const vertexs[] = {
 	-1.0f,	1.0f,	0.0f,	//left top
 	-1.0f,	-1.0f,	0.0f,	//left bottom
 	1.0f,	1.0f,	0.0f,	//right top
 	1.0f,	-1.0f,	0.0f,	//right bottom
 };
 
-float texcoords[] = {
-	0.125f,	0.0f,	//left top
-	0.125f,	1.0f,	//left bottom
-	0.875f,	0.0f,	//right top
-	0.875f,	1.0f,	//right bottom
+//static float const texcoords[] = {
+//	0.125f,	0.0f,	//left top
+//	0.125f,	1.0f,	//left bottom
+//	0.875f,	0.0f,	//right top
+//	0.875f,	1.0f,	//right bottom
+//};
+static float const texcoords[] = {
+	0.0f,	0.0f,	//left top
+	0.0f,	1.0f,	//left bottom
+	1.0f,	0.0f,	//right top
+	1.0f,	1.0f,	//right bottom
 };
 
 @interface CameraView() {
@@ -49,6 +55,7 @@ float texcoords[] = {
 
 - (void)setupGL {
 	
+	self.context= [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	[EAGLContext setCurrentContext:self.context];
 	
 	[self loadShaders];
@@ -126,6 +133,8 @@ float texcoords[] = {
 	
 	glUseProgram(_program);
 	
+	glUniform1f(uniforms[UNIFORM_AMPLITUDE], self.amplitude);
+	glUniform1f(uniforms[UNIFORM_PERIOD], self.period);
 //	glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
 //	glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
 	
@@ -151,14 +160,14 @@ float texcoords[] = {
 	self = [super initWithFrame:frame];
 	if (self) {
 		
+		self.amplitude= 0.01;
+		self.period= 5.0;
 		self.contentScaleFactor= [[UIScreen mainScreen] scale];
 		
 		CAEAGLLayer* layer= (CAEAGLLayer *)self.layer;
 		layer.opaque= YES;
 		layer.drawableProperties= @{kEAGLDrawablePropertyRetainedBacking: [NSNumber numberWithBool:NO],
 									kEAGLDrawablePropertyColorFormat: kEAGLColorFormatRGBA8};
-		
-		_context= [[EAGLContext alloc] initWithAPI:kEAGLRenderingAPIOpenGLES2];
 	}
 	return self;
 }
@@ -242,8 +251,8 @@ float texcoords[] = {
 	}
 	
 	// Get uniform locations.
-	//	uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX] = glGetUniformLocation(_program, "modelViewProjectionMatrix");
-	//	uniforms[UNIFORM_NORMAL_MATRIX] = glGetUniformLocation(_program, "normalMatrix");
+	uniforms[UNIFORM_AMPLITUDE] = glGetUniformLocation(_program, "amplitude");
+	uniforms[UNIFORM_PERIOD] = glGetUniformLocation(_program, "period");
 	
 	// Release vertex and fragment shaders.
 	if (vertShader) {

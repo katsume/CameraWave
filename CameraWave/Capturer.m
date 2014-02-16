@@ -106,7 +106,8 @@ didOutputSampleBuffer:(CMSampleBufferRef)sampleBuffer
 	if (self) {
 		
 		_session= [AVCaptureSession new];
-		_session.sessionPreset= AVCaptureSessionPreset1280x720;
+//		_session.sessionPreset= AVCaptureSessionPreset1280x720;
+		_session.sessionPreset= AVCaptureSessionPreset640x480;
 		[_session beginConfiguration];
 		[self configureInput];
 		[self configureOutput];
