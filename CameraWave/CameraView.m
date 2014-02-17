@@ -1,9 +1,11 @@
 #import "CameraView.h"
 
 enum {
+	UNIFORM_TEXTURE,
 	UNIFORM_AMPLITUDE,
 	UNIFORM_PERIOD,
-	UNIFORM_TEXTURE,
+	UNIFORM_SCALE,
+	UNIFORM_PHASE,
 	NUM_UNIFORMS
 };
 GLint uniforms[NUM_UNIFORMS];
@@ -135,8 +137,8 @@ static float const texcoords[] = {
 	
 	glUniform1f(uniforms[UNIFORM_AMPLITUDE], self.amplitude);
 	glUniform1f(uniforms[UNIFORM_PERIOD], self.period);
-//	glUniformMatrix4fv(uniforms[UNIFORM_MODELVIEWPROJECTION_MATRIX], 1, 0, _modelViewProjectionMatrix.m);
-//	glUniformMatrix3fv(uniforms[UNIFORM_NORMAL_MATRIX], 1, 0, _normalMatrix.m);
+	glUniform1f(uniforms[UNIFORM_SCALE], self.scale);
+	glUniform1f(uniforms[UNIFORM_PHASE], self.phase);
 	
 	glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
 	glBindRenderbuffer(GL_RENDERBUFFER, _colorBuffer);
@@ -160,8 +162,10 @@ static float const texcoords[] = {
 	self = [super initWithFrame:frame];
 	if (self) {
 		
-		self.amplitude= 0.01;
-		self.period= 5.0;
+//		self.amplitude= 0.01;
+//		self.period= 5.0;
+//		self.scale= 0.9;
+//		self.phase= 0.0;
 		self.contentScaleFactor= [[UIScreen mainScreen] scale];
 		
 		CAEAGLLayer* layer= (CAEAGLLayer *)self.layer;
@@ -253,6 +257,8 @@ static float const texcoords[] = {
 	// Get uniform locations.
 	uniforms[UNIFORM_AMPLITUDE] = glGetUniformLocation(_program, "amplitude");
 	uniforms[UNIFORM_PERIOD] = glGetUniformLocation(_program, "period");
+	uniforms[UNIFORM_SCALE] = glGetUniformLocation(_program, "scale");
+	uniforms[UNIFORM_PHASE] = glGetUniformLocation(_program, "phase");
 	
 	// Release vertex and fragment shaders.
 	if (vertShader) {
